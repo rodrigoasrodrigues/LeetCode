@@ -1,9 +1,9 @@
 # the description of the problem is really confusing
 class Solution:
     def deviation(self, nums: List[int]) -> int:
-        'calculate deviation'
-        minn = min(nums)
-        maxn = max(nums)
+        'calculate deviation, assumes list sorted reverse'
+        minn = nums[-1]
+        maxn = nums[0]
         dev = maxn - minn
         return dev
 
@@ -16,11 +16,11 @@ class Solution:
 
     def halve_max(self, nums: List[int]) -> List[int]:
         'assumes max to be even, otherwise returns None'
-        m = max(nums)
+        m = nums[0]
         if m % 2 == 1: # if max is not event
             return None
-        idx = nums.index(m)
-        nums[idx] = nums[idx] / 2
+        nums[0] = nums[0] / 2
+        nums.sort(reverse=True)
         return nums
     
 
@@ -29,6 +29,7 @@ class Solution:
         'iterate and minimizes deviation'
         # doubling all odds can only be done once and solves all possible cases for odds
         nums = self.double_all_odds(nums)
+        nums.sort(reverse=True)
         current_lower_deviation = self.deviation(nums)
         nums = self.halve_max(nums)
         while nums: # while makes sense to attemp reduction
