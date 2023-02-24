@@ -1,63 +1,40 @@
+# the description of the problem is really confusing
 class Solution:
     def deviation(self, nums: List[int]) -> int:
-        if nums is None: return None
-        if len(nums)==0:
-            return None
+        'calculate deviation'
         minn = min(nums)
         maxn = max(nums)
         dev = maxn - minn
         return dev
 
-    def double_lower_odd(self, nums: List[int]) -> List[int]:
-        # double lower odd approach
-        odds = [x for x in nums if x % 2 != 0]
-        if len(odds)>0:
-            lower_odd = min(odds)
-            lo_idx = nums.index(lower_odd)
-            lo_nums = nums.copy()
-            lo_nums[lo_idx] = lo_nums[lo_idx] * 2
-            return lo_nums
-        else:
-            return None
+    def double_all_odds(self, nums: List[int]) -> List[int]:
+        'this applies the second operation to all'
+        for i in range(len(nums)):
+            if nums[i] % 2 == 1:
+                nums[i] = nums[i] * 2
+        return nums
 
-    def halve_higher_even(self, nums: List[int]) -> List[int]:
-        # divide higher even approach
-        evens = [x for x in nums if x % 2 == 0]
-        if len(evens)>0:
-            higher_even = max(evens)
-            he_idx = nums.index(higher_even)
-            he_nums = nums.copy()
-            he_nums[he_idx] = he_nums[he_idx] / 2
-            return he_nums
-        else:
+    def halve_max(self, nums: List[int]) -> List[int]:
+        'assumes max to be even, otherwise returns None'
+        m = max(nums)
+        if m % 2 == 1: # if max is not event
             return None
-
+        idx = nums.index(m)
+        nums[idx] = nums[idx] / 2
+        return nums
+    
 
 
     def minimumDeviation(self, nums: List[int]) -> int:
-        # initial deviation
-        init_dev = self.deviation(nums)
-        # minumum possible value
-        if init_dev == 0:
-            return 0
-        dlo = self.double_lower_odd(nums)
-        dlo_dev = self.deviation(dlo)
-        hhe = self.halve_higher_even(nums)
-        hhe_dev = self.deviation(hhe)
-        
-        # used to ignore branch
-        nope = init_dev *2
-
-        if hhe_dev is None:
-            hhe_dev = nope
-        if dlo_dev is None:
-            dlo_dev = nope
-
-        # halving reduces deviation
-        if hhe_dev <= init_dev and hhe_dev <= dlo_dev:
-            return self.minimumDeviation(hhe)
-        # doubling reduces deviation
-        elif dlo_dev < init_dev and dlo_dev <= hhe_dev:
-            return self.minimumDeviation(dlo)
-        # no gain
-        return int(init_dev)
+        'iterate and minimizes deviation'
+        # doubling all odds can only be done once and solves all possible cases for odds
+        nums = self.double_all_odds(nums)
+        current_lower_deviation = self.deviation(nums)
+        nums = self.halve_max(nums)
+        while nums: # while makes sense to attemp reduction
+            new_dev = self.deviation(nums)
+            if new_dev < current_lower_deviation: # if it reduces uses the new value
+                current_lower_deviation = new_dev
+            nums = self.halve_max(nums)
+        # return the lowest value obtained
+        return int(current_lower_deviation)
